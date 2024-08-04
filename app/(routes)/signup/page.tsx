@@ -60,7 +60,7 @@ const page = () => {
     username: string;
   };
 
-  const errorCodeHandler = (statusCode: string) => {
+  const errorCodeHandler = (statusCode?: string) => {
     // if (statusCode ===) {
     // }
   };

@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import {
   Form,
   FormControl,
@@ -18,9 +18,11 @@ import Link from 'next/link';
 import { createClient } from '@/utils/supabase/client';
 import SectionContentContainer from '@/components/PageContainer';
 import { Loader2 } from 'lucide-react';
+import { useRouter } from 'next/navigation';
 
 const page = () => {
   const [isLoading, setIsLoading] = useState(false);
+  const router = useRouter();
 
   const supabase = createClient();
 
@@ -51,24 +53,44 @@ const page = () => {
     },
   });
 
+  type UsersDataTableType = {
+    id: number;
+    created_at: string;
+    email: string;
+    username: string;
+  };
+
+  const errorCodeHandler = (statusCode: string) => {
+    // if (statusCode ===) {
+    // }
+  };
+
   const handleSubmit = async (formData: z.infer<typeof formSchema>) => {
     const { emailAddress, password, username } = formData;
 
-    let { data, error } = await supabase.auth.signUp({
-      email: emailAddress,
-      password,
-    });
+    let { data: signupData, error: signupErrorData } =
+      await supabase.auth.signUp({
+        email: emailAddress,
+        password,
+      });
+
+    const { data: usersData, error: usersDataError } = await supabase
+      .from('users-details')
+      .insert([{ email: emailAddress, username }] as UsersDataTableType[]);
 
     setIsLoading(true);
 
-    if (error) {
-      console.error(error);
+    if (signupErrorData || usersDataError) {
+      const signupError = errorCodeHandler(signupErrorData?.code);
       return setIsLoading(false);
     }
 
-    if ((data.session || data.user) && !error) {
-      console.log('success');
-      return setIsLoading(false);
+    if (
+      (signupData.session || signupData.user) &&
+      !signupErrorData &&
+      !usersDataError
+    ) {
+      return router.push('/');
     }
   };
 

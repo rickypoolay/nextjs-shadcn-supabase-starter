@@ -2,16 +2,16 @@ import React from 'react';
 
 const SectionContentContainer = ({
   children,
-  sectionBackground,
+  className,
   flexGrow,
 }: {
-  children: any;
-  sectionBackground?: string;
+  children?: any;
+  className?: string;
   flexGrow?: boolean;
 }) => {
   return (
     <section
-      className={`w-full ${sectionBackground ?? ''} flex flex-col ${
+      className={`w-full ${className ?? ''} flex flex-col ${
         flexGrow ? 'flex-grow' : 'h-full'
       }`}
     >

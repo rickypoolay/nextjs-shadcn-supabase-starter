@@ -1,17 +1,14 @@
-'use client';
 import Link from 'next/link';
 import { Button } from './ui/button';
-import { useTheme } from 'next-themes';
-import { useEffect, useState } from 'react';
-import { Moon, Sun } from 'lucide-react';
+import { createClient } from '@/utils/supabase/server';
+import ThemeSwitcher from './ThemeSwitcher';
 
-const Navbar = () => {
-  const { theme, setTheme } = useTheme();
-  const [isClient, setIsClient] = useState(false);
+const Navbar = async () => {
+  const supabase = createClient();
 
-  useEffect(() => {
-    setIsClient(true);
-  }, []);
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
 
   return (
     <nav className='p-4'>
@@ -23,25 +20,34 @@ const Navbar = () => {
         </Link>
         <div
           className='flex
-        gap-4'
+        gap-4 items-center'
         >
-          <Link href='/login' legacyBehavior passHref>
-            <Button variant={'secondary'} size={'sm'}>
-              Login
-            </Button>
-          </Link>
-          <Link href='/signup' legacyBehavior passHref>
-            <Button size={'sm'}>Signup</Button>
-          </Link>
-          {isClient && (
-            <Button
-              onClick={() =>
-                theme === 'dark' ? setTheme('light') : setTheme('dark')
-              }
-              size={'sm'}
-            >
-              {theme !== 'dark' ? <Moon size={15} /> : <Sun size={15} />}
-            </Button>
+          {user !== null ? (
+            <>
+              <p>Hello, {user.email}!</p>
+              <Button
+                onClick={async () => {
+                  'use server';
+                  return await supabase.auth.signOut();
+                }}
+                variant={'secondary'}
+                size={'sm'}
+              >
+                Sign out
+              </Button>
+            </>
+          ) : (
+            <>
+              <Link href='/login' legacyBehavior passHref>
+                <Button variant={'secondary'} size={'sm'}>
+                  Login
+                </Button>
+              </Link>
+              <Link href='/signup' legacyBehavior passHref>
+                <Button size={'sm'}>Signup</Button>
+              </Link>
+              <ThemeSwitcher />
+            </>
           )}
         </div>
       </div>

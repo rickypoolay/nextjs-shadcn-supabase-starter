@@ -26,7 +26,7 @@ export default function RootLayout({
       <body className='bg-background text-primary min-h-[100vh] flex flex-col'>
         <ThemeProvider attribute='class' defaultTheme='system' enableSystem>
           <Navbar />
-          <main className='flex-1 flex'>{children}</main>
+          <main className='flex-1 flex flex-col'>{children}</main>
         </ThemeProvider>
         <Footer />
       </body>
